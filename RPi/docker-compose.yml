@@ -6,7 +6,7 @@ networks:
 
 services:
   ros_master:
-    image: ros:melodic-ros-core
+    image: ros:noetic-ros-core
     command: stdbuf -o L roscore
     networks:
       - ros

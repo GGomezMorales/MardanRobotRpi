@@ -1,4 +1,4 @@
-FROM ros:melodic-ros-base
+FROM ros:noetic-ros-base
 
 RUN apt update && apt install ros-melodic-teleop-twist-keyboard
 

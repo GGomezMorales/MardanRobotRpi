@@ -1,4 +1,4 @@
-FROM ros:melodic-ros-base
+FROM ros:noetic-ros-base
 
 # install ros tutorials packages
 RUN apt-get update && apt-get install -y \
