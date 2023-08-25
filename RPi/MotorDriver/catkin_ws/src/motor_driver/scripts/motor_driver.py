@@ -27,8 +27,8 @@ class MotorController:
         self.l_val = 0
         self.r_val = 0
         self.rate = rospy.Rate(10)
-        self.worker = threading.Thread(target=self.i2c_thread)
-        self.motor_interface = motor_interface
+        self.thread = threading.Thread(target=self.i2c_thread)
+        self.motor_interface = motor_interface or MockMotorController()
 
     def data_processing_callback(self, twist):
         self.l_val = int((twist.linear.x - twist.angular.z)*self.vel_max/2)
@@ -36,18 +36,18 @@ class MotorController:
 
     def i2c_thread(self):
         while not rospy.is_shutdown():
-            motors.send_speed(self.l_val, self.r_val)
+            self.motor_interface.send_speed(self.l_val, self.r_val)
             self.rate.sleep()
 
-    def star_worker(self):
-        self.worker.start()
+    def star_thread(self):
+        self.thread.start()
 
 def main():
     ## i2cMotorController = I2CMotorController()
     i2cMotorController = MockMotorController()
     rospy.init_node('motor_driver')
     motorController = MotorController(i2cMotorController)
-    motorController.star_worker()
+    motorController.star_thread()
     try:
         rospy.spin()
     except KeyboardInterrupt:
