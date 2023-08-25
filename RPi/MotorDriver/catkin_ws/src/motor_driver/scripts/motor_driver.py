@@ -11,7 +11,7 @@ class MockMotorController:
         pass
 
     def send_speed(self, speed_l, speed_r, log = False):
-        print(f"speed_l = {speed_l}, speed_r = {speed_r}")
+        print("speed_l =", speed_l, " --- speed_r =", speed_r)
 
 class I2CMotorController:
     def __init__(self):
