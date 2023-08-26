@@ -4,14 +4,7 @@ import rospy
 from geometry_msgs.msg import Twist
 
 import zumo_lib as motors
-import threading
-
-class MockMotorController:
-    def __init__(self):
-        pass
-
-    def send_speed(self, speed_l, speed_r, log = False):
-        rospy.loginfo(f'speed_l = {speed_l} ---- speed_r = {speed_r}')
+import threading        
 
 class I2CMotorController:
     def __init__(self):
@@ -19,6 +12,8 @@ class I2CMotorController:
 
     def send_speed(self, speed_l, speed_r, log = False):
         self.motors.send_speed(speed_l, speed_r)
+        if log:
+            rospy.loginfo("Speed Left: %d, Speed Right: %d", speed_l, speed_r)
 
 class MotorController:
     def __init__(self, motor_interface):
@@ -28,7 +23,7 @@ class MotorController:
         self.r_val = 0
         self.rate = rospy.Rate(10)
         self.thread = threading.Thread(target=self.i2c_thread)
-        self.motor_interface = motor_interface or MockMotorController()
+        self.motor_interface = motor_interface
 
     def data_processing_callback(self, twist):
         self.l_val = int((twist.linear.x - twist.angular.z)*self.vel_max/2)
@@ -43,16 +38,14 @@ class MotorController:
         self.thread.start()
 
 def main():
-    ## i2cMotorController = I2CMotorController()
-    i2cMotorController = MockMotorController()
+    i2c_motor_controller = I2CMotorController()
     rospy.init_node('motor_driver')
-    motorController = MotorController(i2cMotorController)
-    motorController.star_thread()
+    motor_controller = MotorController(i2c_motor_controller)
+    motor_controller.star_thread()
     try:
         rospy.spin()
     except KeyboardInterrupt:
         print("Shutting down")
-
 
 if __name__ == '__main__':
     main()
