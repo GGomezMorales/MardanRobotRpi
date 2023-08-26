@@ -6,12 +6,13 @@ from geometry_msgs.msg import Twist
 import zumo_lib as motors
 import threading        
 
-class I2CMotorController:
+class I2CMotorController: 
+
     def __init__(self):
-        self.motors.init_i2c_bus()
+        motors.init_i2c_bus()
 
     def send_speed(self, speed_l, speed_r, log = False):
-        self.motors.send_speed(speed_l, speed_r)
+        motors.send_speed(speed_l, speed_r)
         if log:
             rospy.loginfo("Speed Left: %d, Speed Right: %d", speed_l, speed_r)
 
