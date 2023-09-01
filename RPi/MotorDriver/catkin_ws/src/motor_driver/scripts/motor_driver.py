@@ -24,15 +24,18 @@ class MotorController:
         self.r_val = 0
         self.rate = rospy.Rate(10)
         self.thread = threading.Thread(target=self.i2c_thread)
+        self.mutex = threading.Lock()
         self.motor_interface = motor_interface
 
     def data_processing_callback(self, twist):
-        self.l_val = int((twist.linear.x - twist.angular.z)*self.vel_max/2)
-        self.r_val = int((twist.linear.x + twist.angular.z)*self.vel_max/2)
+        with self.mutex:
+            self.l_val = int((twist.linear.x - twist.angular.z)*self.vel_max/2)
+            self.r_val = int((twist.linear.x + twist.angular.z)*self.vel_max/2)
 
     def i2c_thread(self):
         while not rospy.is_shutdown():
-            self.motor_interface.send_speed(self.l_val, self.r_val)
+            with self.mutex:
+                self.motor_interface.send_speed(self.l_val, self.r_val)
             self.rate.sleep()
 
     def star_thread(self):
